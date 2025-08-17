@@ -3,3 +3,24 @@ body {
   font-family: sans-serif;
   background: #f9f9f9;
 }
+
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ff4b5c;
+  color: #fff;
+  border: none;
+  padding: 15px 20px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.floating-btn:hover {
+  background-color: #ff6f80;
+}

@@ -1,0 +1,68 @@
+import React from "react";
+import { Link , } from "react-router-dom";
+import { Container, Card,Image } from "react-bootstrap";
+import { nanoid } from "nanoid";
+export default function Profile() {
+  
+  const [posts, setPosts] = React.useState([]); 
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const  id  = user.id
+ 
+
+  React.useEffect(() => {
+    fetch(`https://tarmeezacademy.com/api/v1/users/${id}/posts`)
+      .then((res) => res.json())
+      .then((data) => setPosts(data.data));
+  }, [id]);
+
+  
+  if (posts.length === 0) {
+    return <p>Loading...</p>;
+  }
+
+ 
+  const userInfo = posts[0].author;
+
+  return (
+    <main>
+      
+      <Container className="pt-4 text-light " >
+        <Image
+          src={userInfo.profile_image || "https://via.placeholder.com/150"}
+          
+          roundedCircle style={{height:"40px",width:"40px"}}
+        />
+        <h2 className="text-black" >{userInfo.name}</h2>
+       
+        <hr />
+        
+
+        
+        {posts.map((post) => (
+          
+          <Link to={`/${post.id}`}  key={post.id} className="mt-2" style={{ width: "65%",textDecoration:"none" }} >
+          <Card className="mt-2 mb-4" style={{ width: "65%" }}>
+            <Card.Body>
+             
+              <Card.Text>{post.body}</Card.Text>
+              {post.image && (
+                <Card.Img
+                  src={post.image}
+                  alt="post"
+                  style={{ width: "100%", borderRadius: "10px" }}
+                />
+              )}
+              <small>{post.created_at}</small>
+              <div><i className="bi bi-chat-square-text"></i> comments:{post.comments_count} {post.tags.map(tag=><span key={nanoid()}><i className="bi bi-tags"></i>{tag}</span>)} </div>
+              
+            </Card.Body>
+          </Card>
+          </Link>
+          
+        ))}
+        
+        
+      </Container>
+    </main>
+  );
+}
