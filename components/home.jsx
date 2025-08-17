@@ -30,7 +30,7 @@ export default function Home() {
 
   }, []);
   const postItems = post.map((item) => (
-    <Link className="mt-2" style={{ width: "65%",textDecoration:"none" }} key={item.id} to={`/${item.id}`} >
+    <Link className="mt-2" style={{ width: "65%",textDecoration:"none" }} key={item.id} to={token?`/${item.id}`:"/login"} >
        <Card   >
       <Card.Body>
         <div>
