@@ -27,7 +27,8 @@ export default function Userprofile() {
       
       <Container className="pt-4 text-light " >
         <Image
-          src={userInfo.profile_image || "https://via.placeholder.com/150"}
+          src={userInfo.profile_image || "media/anonymous-user-icon.png"}
+          onError={(e)=>e.target.src="media/anonymous-user-icon.png"}
           
           roundedCircle style={{height:"40px",width:"40px"}}
         />
@@ -46,6 +47,7 @@ export default function Userprofile() {
               <Card.Text>{post.body}</Card.Text>
               {post.image && (
                 <Card.Img
+                onError={(e)=>e.target.style.display="none"}
                   src={post.image}
                   alt="post"
                   style={{ width: "100%", borderRadius: "10px" }}

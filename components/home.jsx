@@ -1,68 +1,144 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Container, Card, Image, Row, Button } from "react-bootstrap";
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 import Post from "./post";
-
-import { Outlet ,Link} from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 
 export default function Home() {
-  const [post, setPost] = React.useState([]);
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1); 
+  const [hasMore, setHasMore] = useState(true); 
+  const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const addPostRef=useRef() 
+  const addPostRef = useRef();
+  const observerRef = useRef(); 
 
-
-
-  function getPosts(){
-        fetch("https://tarmeezacademy.com/api/v1/posts?limit=20")
+  function getPosts(pageNumber = 1) {
+    setLoading(true);
+    fetch(`https://tarmeezacademy.com/api/v1/posts?limit=10&page=${pageNumber}`)
       .then((res) => res.json())
-      .then((data) => setPost(data.data));
-
+      .then((data) => {
+        if (data.data.length === 0) {
+          setHasMore(false);
+        } else {
+          setPosts((prev) => [...prev, ...data.data]);
+        }
+      })
+      .finally(() => setLoading(false));
   }
-  function scrollIntoInput(){
+
+  function scrollIntoInput() {
     addPostRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "center",
-    })
+    });
   }
 
-  React.useEffect(() => {
-    getPosts()
+  useEffect(() => {
+    getPosts(page);
+  }, [page]);
 
-  }, []);
-  const postItems = post.map((item) => (
-    <Link className="mt-2" style={{ width: "65%",textDecoration:"none" }} key={item.id} to={token?`/${item.id}`:"/login"} >
-       <Card   >
-      <Card.Body>
-        <div>
-          {" "}
-          <Image src= {item.author?.profile_image ||"/media/anonymous-user-icon.png"} roundedCircle style={{height:"40px",width:"40px"}} />{" "}
-          <span style={{ fontSize: "1.5rem", fontWeight: "bolder" }}>
-            {item.author.name}
-          </span>{" "}
-          {item.created_at}{" "}
-        </div>
+  
+  const lastPostRef = useRef();
+  useEffect(() => {
+    if (loading) return;
+    if (!hasMore) return;
 
-        
-        <Card.Text>{item.body}</Card.Text>
-      </Card.Body>
+    if (observerRef.current) observerRef.current.disconnect();
 
-      <Card.Img variant="top" src={item.image} />
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px", 
+        threshold: 0.1,
+      }
+    );
 
-      <div><i className="bi bi-chat-square-text"></i> comments:{item.comments_count} {item.tags.map(tag=><span key={nanoid()}><i className="bi bi-tags"></i>{tag}</span>)} </div>
-    </Card>
-    </Link>
-  ));
+    if (lastPostRef.current) {
+      observerRef.current.observe(lastPostRef.current);
+    }
+  }, [loading, hasMore, posts]);
+
   return (
-    <main className="bg-secondary " style={{ height: "100%" }}>
-      {token&&<Post ref={addPostRef} getPosts={getPosts} />}
-      {token&&<Button className="floating-btn"onClick={scrollIntoInput} >+</Button>}
+    <main className="bg-secondary " style={{ minHeight: "100vh" }}>
+      {token && <Post ref={addPostRef} getPosts={() => getPosts(1)} />}
+      {token && (
+        <Button className="floating-btn" onClick={scrollIntoInput}>
+          +
+        </Button>
+      )}
       <Container className="pt-4 text-light ">
-        
         <Row className="d-flex justify-content-center">
-          
-          {postItems}</Row>
+          {posts.map((item, index) => {
+            const isLast = index === posts.length - 1;
+            return (
+              <Link
+                className="mt-2"
+                style={{ width: "65%", textDecoration: "none" }}
+                key={item.id}
+                to={token ? `/${item.id}` : "/login"}
+                ref={isLast ? lastPostRef : null}
+              >
+                <Card>
+                  <Card.Body>
+                    <div>
+                      <Image
+                        src={
+                          item.author?.profile_image ||
+                          "media/anonymous-avatar.png"
+                        }
+                        onError={(e) => {
+                          e.target.src = "media/anonymous-avatar.png";
+                        }}
+                        roundedCircle
+                        style={{ height: "40px", width: "40px" }}
+                      />{" "}
+                      <span style={{ fontSize: "1.5rem", fontWeight: "bolder" }}>
+                        {item.author.name}
+                      </span>{" "}
+                      {item.created_at}
+                    </div>
+
+                    <Card.Text>{item.body}</Card.Text>
+                  </Card.Body>
+
+                  {item.image && typeof item.image === "string" && (
+                    <Card.Img
+                      onError={(e) => (e.target.style.display = "none")}
+                      variant="top"
+                      src={item.image}
+                    />
+                  )}
+
+                  <div>
+                    <i className="bi bi-chat-square-text"></i> comments:
+                    {item.comments_count}{" "}
+                    {item.tags.map((tag) => (
+                      <span key={nanoid()}>
+                        <i className="bi bi-tags"></i>
+                        {tag}
+                      </span>
+                    ))}{" "}
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </Row>
+
+        {loading && <p className="text-center text-light">Loading...</p>}
+        {!hasMore && (
+          <p className="text-center text-light">No more posts to show</p>
+        )}
+
         <Outlet />
       </Container>
     </main>
   );
 }
+

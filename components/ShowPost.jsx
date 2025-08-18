@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useParams ,useNavigate,Link} from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Container,
   Card,
@@ -8,7 +8,7 @@ import {
   Button,
   Spinner,
   Form,
-  Alert
+  Alert,
 } from "react-bootstrap";
 import axios from "axios";
 
@@ -21,12 +21,11 @@ export default function ShowPost() {
   const commentRef = useRef();
   const [isToggled, setIsToggled] = React.useState(false);
 
-  
   const [isEditing, setIsEditing] = React.useState(false);
   const [editBody, setEditBody] = React.useState("");
 
-  const[showDeleteAlert,setShowDeleteAlert]=React.useState(false)
-  const navigate=useNavigate()
+  const [showDeleteAlert, setShowDeleteAlert] = React.useState(false);
+  const navigate = useNavigate();
 
   function buttonClicked() {
     setIsToggled((prev) => !prev);
@@ -40,7 +39,7 @@ export default function ShowPost() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios 
+    axios
       .post(
         `https://tarmeezacademy.com/api/v1/posts/${id}/comments`,
         {
@@ -63,12 +62,11 @@ export default function ShowPost() {
       });
   }
 
-  
   function editPost(e) {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("_method", "put"); 
+    formData.append("_method", "put");
     formData.append("body", editBody || post.body);
 
     axios
@@ -80,25 +78,28 @@ export default function ShowPost() {
       })
       .then((res) => {
         console.log("Updated:", res.data);
-        setPost(res.data.data); 
-        setIsEditing(false); 
+        setPost(res.data.data);
+        setIsEditing(false);
       })
       .catch((err) => {
         console.error("Error:", err);
       });
   }
-  function showDeletealertfunc(){
-    setShowDeleteAlert(true)
+  function showDeletealertfunc() {
+    setShowDeleteAlert(true);
   }
-  function deletePost(){
-    axios.delete(`https://tarmeezacademy.com/api/v1/posts/${id}`,{headers: {
+  function deletePost() {
+    axios
+      .delete(`https://tarmeezacademy.com/api/v1/posts/${id}`, {
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
-        },})
-        .then((res)=>{
-          console.log(res.data)
-          navigate("/")
-        })
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        navigate("/");
+      });
   }
 
   React.useEffect(() => {
@@ -106,7 +107,7 @@ export default function ShowPost() {
       .then((res) => res.json())
       .then((data) => {
         setPost(data.data);
-        setEditBody(data.data.body); 
+        setEditBody(data.data.body);
       });
   }, [id]);
 
@@ -128,28 +129,34 @@ export default function ShowPost() {
               <Card.Body>
                 {user.id === post.author.id && (
                   <>
-                  
                     {!isEditing ? (
                       <>
-                      <Button
-                        onClick={() => setIsEditing(true)}
-                        className="mb-2"
-                        variant="outline-dark"
-                      >
-                        Edit post
-                      </Button>
-                      <Button variant="danger" className="mx-2 mb-2" onClick={showDeletealertfunc} >Delete</Button>
-                      {showDeleteAlert&&
-                      <Alert
-          variant="danger"
-          
-          dismissible
-          className="mt-3"
-        >
-          are you sure you want to delete
-          <Button className="mx-2" onClick={deletePost} variant="danger" >Delete post</Button>
-        </Alert>
-                      }
+                        <Button
+                          onClick={() => setIsEditing(true)}
+                          className="mb-2"
+                          variant="outline-dark"
+                        >
+                          Edit post
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="mx-2 mb-2"
+                          onClick={showDeletealertfunc}
+                        >
+                          Delete
+                        </Button>
+                        {showDeleteAlert && (
+                          <Alert variant="danger" dismissible className="mt-3">
+                            are you sure you want to delete
+                            <Button
+                              className="mx-2"
+                              onClick={deletePost}
+                              variant="danger"
+                            >
+                              Delete post
+                            </Button>
+                          </Alert>
+                        )}
                       </>
                     ) : (
                       <Form onSubmit={editPost} className="mb-3">
@@ -183,12 +190,14 @@ export default function ShowPost() {
                 <div>
                   <Image
                     src={post.author.profile_image}
+                    onError={(e)=>e.target.src="media/anonymous-avatar.png"}
                     roundedCircle
                     style={{ height: "40px", width: "40px" }}
                   />{" "}
                   <span style={{ fontSize: "1.5rem", fontWeight: "bolder" }}>
-                    <Link to={`/userprofile/${post.author.id}`}>{post.author.name}</Link>
-                    
+                    <Link to={`/userprofile/${post.author.id}`}>
+                      {post.author.name}
+                    </Link>
                   </span>{" "}
                   {post.created_at}{" "}
                 </div>
@@ -196,7 +205,18 @@ export default function ShowPost() {
                 <Card.Text>{post.body}</Card.Text>
               </Card.Body>
 
-             {post.image? <Card.Img variant="top" src={post.image} />:""}
+              {post.image &&
+                typeof post.image === "string" &&
+                post.image.trim() !== "" &&
+                post.image.includes(".jpg") && (
+                  <Card.Img
+                    variant="top"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                    src={post.image}
+                  />
+                )}
               <Button
                 className="mt-2"
                 variant={isToggled ? "info" : "outline-info"}
@@ -222,9 +242,10 @@ export default function ShowPost() {
                               ? "/media/anonymous-user-icon.png"
                               : comment.author.profile_image
                           }
+                          onError={(e)=>e.target.src="media/anonymous-avatar.png"}
                           style={{ width: "20px", height: "20px" }}
                         />{" "}
-                        {comment.author.name}
+                        <Link to={`/userprofile/${comment.author.id}`} >{comment.author.name}</Link>
                       </span>
                       <span> {comment.body}</span>
                     </li>
@@ -252,4 +273,3 @@ export default function ShowPost() {
       </main>
     );
 }
-

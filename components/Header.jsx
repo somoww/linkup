@@ -26,7 +26,7 @@ export default function Header() {
           <Nav className="align-items-center">
             <Nav.Link as={Link} to="/profile" className="p-3 me-0">
               {user?<span>
-                <img className="rounded-circle mx-2" src={user.profile_image} style={{width:"40px",height:"40px"}} />
+                <img className="rounded-circle mx-2" src={user.profile_image || "media/anonymous-user-icon.png"} onError={(e)=>e.target.src="media/anonymous-avatar.png"} style={{width:"40px",height:"40px"}} />
                 {user.name}
               </span>:<span>profile</span>}
             </Nav.Link>
