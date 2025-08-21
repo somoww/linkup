@@ -29,13 +29,13 @@ export default function Header() {
                 <span>
                   <img
                     className="rounded-circle mx-2"
-                    src={user.profile_image || "../media/anonymous-user-icon.png"}
+                    src={user.profile_image || "/media/anonymous-user-icon.png"}
                     onError={(e) => {
                       if (
                         e.target.src !==
-                        window.location.origin + "../media/anonymous-avatar.png"
+                        window.location.origin + "/media/anonymous-avatar.png"
                       ) {
-                        e.target.src = "../media/anonymous-avatar.png";
+                        e.target.src = "/media/anonymous-avatar.png";
                       }
                     }}
                     style={{ width: "40px", height: "40px" }}

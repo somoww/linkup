@@ -193,9 +193,9 @@ export default function ShowPost() {
                     onError={(e) => {
                       if (
                         e.target.src !==
-                        window.location.origin + "../media/anonymous-avatar.png"
+                        window.location.origin + "/media/anonymous-avatar.png"
                       ) {
-                        e.target.src = "../media/anonymous-avatar.png";
+                        e.target.src = "/media/anonymous-avatar.png";
                       }
                     }}
                     roundedCircle
@@ -246,16 +246,16 @@ export default function ShowPost() {
                             !comment.author?.profile_image ||
                             typeof comment.author.profile_image !== "string" ||
                             comment.author.profile_image.trim() === ""
-                              ? "../media/anonymous-user-icon.png"
+                              ? "/media/anonymous-avatar.png"
                               : comment.author.profile_image
                           }
                           onError={(e) => {
                             if (
                               e.target.src !==
                               window.location.origin +
-                                "../media/anonymous-avatar.png"
+                                "/media/anonymous-avatar.png"
                             ) {
-                              e.target.src = "../media/anonymous-avatar.png";
+                              e.target.src = "/media/anonymous-avatar.png";
                             }
                           }}
                           style={{ width: "20px", height: "20px" }}

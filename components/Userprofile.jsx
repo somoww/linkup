@@ -24,13 +24,13 @@ export default function Userprofile() {
     <main>
       <Container className="pt-4 text-light ">
         <Image
-          src={userInfo.profile_image || "../media/anonymous-user-icon.png"}
+          src={userInfo.profile_image || "/media/anonymous-user-icon.png"}
           onError={(e) => {
             if (
               e.target.src !==
-              window.location.origin + "../media/anonymous-avatar.png"
+              window.location.origin + "/media/anonymous-avatar.png"
             ) {
-              e.target.src = "../media/anonymous-avatar.png";
+              e.target.src = "/media/anonymous-avatar.png";
             }
           }}
           roundedCircle

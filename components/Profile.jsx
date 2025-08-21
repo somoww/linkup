@@ -26,12 +26,12 @@ export default function Profile() {
           onError={(e) => {
             if (
               e.target.src !==
-              window.location.origin + "../media/anonymous-avatar.png"
+              window.location.origin + "/media/anonymous-avatar.png"
             ) {
-              e.target.src = "../media/anonymous-avatar.png";
+              e.target.src = "/media/anonymous-avatar.png";
             }
           }}
-          src={userInfo.profile_image || "../media/anonymous-avatar.png"}
+          src={userInfo.profile_image || "/media/anonymous-avatar.png"}
           roundedCircle
           style={{ height: "40px", width: "40px" }}
         />

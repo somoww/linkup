@@ -94,15 +94,15 @@ export default function Home() {
                       <Image
                         src={
                           item.author?.profile_image ||
-                          "../media/anonymous-avatar.png"
+                          "/media/anonymous-avatar.png"
                         }
                         onError={(e)=>{
                           {
             if (
               e.target.src !==
-              window.location.origin + "../media/anonymous-avatar.png"
+              window.location.origin + "/media/anonymous-avatar.png"
             ) {
-              e.target.src = "../media/anonymous-avatar.png";
+              e.target.src = "/media/anonymous-avatar.png";
             }
           }
                         }}
