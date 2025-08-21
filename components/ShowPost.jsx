@@ -190,7 +190,14 @@ export default function ShowPost() {
                 <div>
                   <Image
                     src={post.author.profile_image}
-                    onError={(e)=>e.target.src="media/anonymous-avatar.png"}
+                    onError={(e) => {
+                      if (
+                        e.target.src !==
+                        window.location.origin + "../media/anonymous-avatar.png"
+                      ) {
+                        e.target.src = "../media/anonymous-avatar.png";
+                      }
+                    }}
                     roundedCircle
                     style={{ height: "40px", width: "40px" }}
                   />{" "}
@@ -239,13 +246,23 @@ export default function ShowPost() {
                             !comment.author?.profile_image ||
                             typeof comment.author.profile_image !== "string" ||
                             comment.author.profile_image.trim() === ""
-                              ? "/media/anonymous-user-icon.png"
+                              ? "../media/anonymous-user-icon.png"
                               : comment.author.profile_image
                           }
-                          onError={(e)=>e.target.src="media/anonymous-avatar.png"}
+                          onError={(e) => {
+                            if (
+                              e.target.src !==
+                              window.location.origin +
+                                "../media/anonymous-avatar.png"
+                            ) {
+                              e.target.src = "../media/anonymous-avatar.png";
+                            }
+                          }}
                           style={{ width: "20px", height: "20px" }}
                         />{" "}
-                        <Link to={`/userprofile/${comment.author.id}`} >{comment.author.name}</Link>
+                        <Link to={`/userprofile/${comment.author.id}`}>
+                          {comment.author.name}
+                        </Link>
                       </span>
                       <span> {comment.body}</span>
                     </li>

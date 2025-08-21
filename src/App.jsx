@@ -23,11 +23,12 @@ function App() {
     <Route path=":id" element={<ShowPost/>} />
     <Route  element={<Authrequired/>} >
     <Route path="profile" index element={<Profile/>}/>
+    <Route path="userprofile/:id" element={<Userprofile/>}/>
     </Route>
     
     <Route path="login" element={<Login/>} />
     <Route path="register" element={<Register/>} />
-    <Route path="userprofile/:id" element={<Userprofile/>}/>
+    
     
 
     
